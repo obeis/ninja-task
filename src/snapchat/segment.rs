@@ -23,11 +23,19 @@ impl<'a> SegmentService<'a> {
         };
         let path = &format!("/adaccounts/{}/segments", ad_account_id);
         let body = serde_json::to_string(&SegmentsRequest { segments })?;
-        let res = make_request(self.token, Method::POST, path, body).await?;
+        let res = make_request(self.token, Method::POST, path, Some(body)).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
+        Ok(res.json().await?)
+    }
 
+    pub async fn get_all(&self, ad_account_id: String) -> Result<SegmentsResponse> {
+        let path = &format!("/adaccounts/{}/segments", ad_account_id);
+        let res = make_request(self.token, Method::GET, path, None).await?;
+        if !matches!(res.status(), StatusCode::OK) {
+            return Err(async_graphql::Error::new(res.text().await?));
+        }
         Ok(res.json().await?)
     }
 }
