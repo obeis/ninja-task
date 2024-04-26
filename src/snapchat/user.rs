@@ -3,6 +3,7 @@ use reqwest::{Method, StatusCode};
 use sha2::{Digest, Sha256};
 
 use super::request::make_request;
+use super::ty::segment::SegmentsResponse;
 use super::ty::user::{UserRequest, UsersRequest, UsersResponse};
 
 pub(crate) struct UserService<'a> {
@@ -64,6 +65,16 @@ impl<'a> UserService<'a> {
             }],
         })?;
         let res = make_request(self.token, Method::DELETE, path, Some(body)).await?;
+        if !matches!(res.status(), StatusCode::OK) {
+            return Err(async_graphql::Error::new(res.text().await?));
+        }
+        Ok(res.json().await?)
+    }
+
+    /// Delete all users from segment
+    pub async fn delete_all_users(&self, segment_id: String) -> Result<SegmentsResponse> {
+        let path = &format!("/segments/{segment_id}/all_users");
+        let res = make_request(self.token, Method::DELETE, path, None).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
