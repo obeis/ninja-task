@@ -1,12 +1,9 @@
 use async_graphql::{Error, Result};
 use reqwest::{Method, StatusCode};
 
-use super::{
-    request::make_request,
-    ty::{
-        SegmentRequest, SegmentsRequest, SegmentsResponse, UpdateSegmentRequest,
-        UpdateSegmentsRequest,
-    },
+use super::request::make_request;
+use super::ty::segment::{
+    SegmentRequest, SegmentsRequest, SegmentsResponse, UpdateSegmentRequest, UpdateSegmentsRequest,
 };
 
 pub(crate) struct SegmentService<'a> {
@@ -24,7 +21,7 @@ impl<'a> SegmentService<'a> {
         } else {
             return Err(Error::new("empty segment list"));
         };
-        let path = &format!("/adaccounts/{}/segments", ad_account_id);
+        let path = &format!("/adaccounts/{ad_account_id}/segments");
         let body = serde_json::to_string(&SegmentsRequest { segments })?;
         let res = make_request(self.token, Method::POST, path, Some(body)).await?;
         if !matches!(res.status(), StatusCode::OK) {
