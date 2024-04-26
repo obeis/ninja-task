@@ -54,3 +54,17 @@ pub struct Segment {
     pub created_at: String,
     pub updated_at: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateSegmentRequest {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub retention_in_days: u32,
+    pub ad_account_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateSegmentsRequest {
+    pub segments: Vec<UpdateSegmentRequest>,
+}

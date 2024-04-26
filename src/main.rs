@@ -14,7 +14,13 @@ async fn main() -> Result<()> {
     let res = client
         .segment()
         .await
-        .get("6798030683466871".to_string())
+        .update(snapchat::ty::UpdateSegmentRequest {
+            id: "6798030683466871".to_string(),
+            name: "Seg 2 Update".to_string(),
+            description: "desc 22".to_string(),
+            retention_in_days: 5,
+            ad_account_id,
+        })
         .await?;
     println!("response: {:#?}", res);
 

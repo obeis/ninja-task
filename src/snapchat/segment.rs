@@ -3,7 +3,10 @@ use reqwest::{Method, StatusCode};
 
 use super::{
     request::make_request,
-    ty::{SegmentRequest, SegmentsRequest, SegmentsResponse},
+    ty::{
+        SegmentRequest, SegmentsRequest, SegmentsResponse, UpdateSegmentRequest,
+        UpdateSegmentsRequest,
+    },
 };
 
 pub(crate) struct SegmentService<'a> {
@@ -42,6 +45,18 @@ impl<'a> SegmentService<'a> {
     pub async fn get(&self, segment_id: String) -> Result<SegmentsResponse> {
         let path = &format!("/segments/{segment_id}");
         let res = make_request(self.token, Method::GET, path, None).await?;
+        if !matches!(res.status(), StatusCode::OK) {
+            return Err(async_graphql::Error::new(res.text().await?));
+        }
+        Ok(res.json().await?)
+    }
+
+    pub async fn update(&self, segment: UpdateSegmentRequest) -> Result<SegmentsResponse> {
+        let path = &format!("/adaccounts/{}/segments", segment.ad_account_id);
+        let body = serde_json::to_string(&UpdateSegmentsRequest {
+            segments: vec![segment],
+        })?;
+        let res = make_request(self.token, Method::PUT, path, Some(body)).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
