@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     let res = client
         .user()
         .await
-        .add_users(
+        .delete_users(
             "6798030683466871".to_string(),
             vec!["g1@gmail.com".to_string(), "g2@gmail.com".to_string()],
         )
