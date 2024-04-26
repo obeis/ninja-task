@@ -12,9 +12,9 @@ async fn main() -> Result<()> {
 
     let client = SnapChat::new(token).await;
     let res = client
-        .user()
+        .segment()
         .await
-        .delete_all_users("6798030683466871".to_string())
+        .delete("6798030683466871".to_string())
         .await?;
 
     println!("response: {:#?}", res);
