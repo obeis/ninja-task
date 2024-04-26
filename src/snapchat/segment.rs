@@ -31,7 +31,16 @@ impl<'a> SegmentService<'a> {
     }
 
     pub async fn get_all(&self, ad_account_id: String) -> Result<SegmentsResponse> {
-        let path = &format!("/adaccounts/{}/segments", ad_account_id);
+        let path = &format!("/adaccounts/{ad_account_id}/segments");
+        let res = make_request(self.token, Method::GET, path, None).await?;
+        if !matches!(res.status(), StatusCode::OK) {
+            return Err(async_graphql::Error::new(res.text().await?));
+        }
+        Ok(res.json().await?)
+    }
+
+    pub async fn get(&self, segment_id: String) -> Result<SegmentsResponse> {
+        let path = &format!("/segments/{segment_id}");
         let res = make_request(self.token, Method::GET, path, None).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
