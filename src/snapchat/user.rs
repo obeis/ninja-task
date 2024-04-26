@@ -22,14 +22,7 @@ impl<'a> UserService<'a> {
         emails: Vec<String>,
     ) -> Result<UsersResponse> {
         let path = &format!("/segments/{segment_id}/users");
-        let mut data: Vec<Vec<String>> = Vec::new();
-        for email in emails.iter() {
-            let mut hasher = Sha256::new();
-            hasher.update(email);
-            let hashed_email = hasher.finalize();
-            let hex_data = hex::encode(hashed_email);
-            data.push(vec![hex_data]);
-        }
+        let data = hash_emails(emails);
         let body = serde_json::to_string(&UsersRequest {
             users: vec![UserRequest {
                 schema: vec!["EMAIL_SHA256".to_string()],
@@ -50,14 +43,7 @@ impl<'a> UserService<'a> {
         emails: Vec<String>,
     ) -> Result<UsersResponse> {
         let path = &format!("/segments/{segment_id}/users");
-        let mut data: Vec<Vec<String>> = Vec::new();
-        for email in emails.iter() {
-            let mut hasher = Sha256::new();
-            hasher.update(email);
-            let hashed_email = hasher.finalize();
-            let hex_data = hex::encode(hashed_email);
-            data.push(vec![hex_data]);
-        }
+        let data = hash_emails(emails);
         let body = serde_json::to_string(&UsersRequest {
             users: vec![UserRequest {
                 schema: vec!["EMAIL_SHA256".to_string()],
@@ -80,4 +66,16 @@ impl<'a> UserService<'a> {
         }
         Ok(res.json().await?)
     }
+}
+
+fn hash_emails(emails: Vec<String>) -> Vec<Vec<String>> {
+    let mut data: Vec<Vec<String>> = Vec::new();
+    for email in emails.iter() {
+        let mut hasher = Sha256::new();
+        hasher.update(email);
+        let hashed_email = hasher.finalize();
+        let hex_data = hex::encode(hashed_email);
+        data.push(vec![hex_data]);
+    }
+    data
 }
