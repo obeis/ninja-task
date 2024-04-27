@@ -6,7 +6,7 @@ use super::request::make_request;
 use super::ty::segment::SegmentsResponse;
 use super::ty::user::{UserRequest, UsersRequest, UsersResponse};
 
-pub(crate) struct UserService<'a> {
+pub struct UserService<'a> {
     token: &'a str,
 }
 

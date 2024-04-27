@@ -6,7 +6,7 @@ use super::ty::segment::{
     SegmentRequest, SegmentsRequest, SegmentsResponse, UpdateSegmentRequest, UpdateSegmentsRequest,
 };
 
-pub(crate) struct SegmentService<'a> {
+pub struct SegmentService<'a> {
     token: &'a str,
 }
 
