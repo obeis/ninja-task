@@ -3,9 +3,9 @@ use dioxus::prelude::*;
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
     #[route("/")]
-    Home {},
-    #[route("/auth")]
     Auth {},
+    #[route("/home")]
+    Home {},
 }
 
 fn main() {
