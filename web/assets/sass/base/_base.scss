@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  /*
+		(X / 16px) * 100% = Y (16 px is default font size)
+		(10 px / 16 px) * 100% = 62.5%
+
+		1rem = 10 px = X
+  */
+  font-size: 62.5%;
+}
