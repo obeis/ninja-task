@@ -1,5 +1,15 @@
 use dioxus::prelude::*;
 
+#[derive(Clone, Routable, Debug, PartialEq)]
+enum Route {
+    #[route("/")]
+    Home {},
+    #[route("/auth")]
+    Auth {},
+    #[route("/auth/:code")]
+    AuthCode { code: String },
+}
+
 fn main() {
     launch(app);
 }
@@ -8,7 +18,7 @@ fn app() -> Element {
     rsx! {
         style { {include_str!("../assets/main.css")} }
 
-        Auth {}
+        Router::<Route> {}
     }
 }
 
@@ -37,5 +47,12 @@ fn Auth() -> Element {
                 }
             }
         }
+    }
+}
+
+#[component]
+fn AuthCode(code: String) -> Element {
+    rsx! {
+        h1 { "Auth Code: {code}" }
     }
 }
