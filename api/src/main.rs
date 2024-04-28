@@ -1,25 +1,33 @@
-use poem::{get, handler, listener::TcpListener, web::Redirect, Request, Result, Route, Server};
-use serde::Deserialize;
+use std::sync::RwLock;
+use std::{env, sync::Arc};
 
-#[derive(Deserialize)]
-struct Params {
-    code: String,
-}
+use async_graphql::Result;
+use poem::middleware::AddData;
+use poem::{get, listener::TcpListener, EndpointExt, Route, Server};
 
-#[handler]
-fn oauth2_code(req: &Request) -> Result<()> {
-    let params = req.params::<Params>()?;
+use handler::oauth2_code;
 
-    Redirect::moved_permanent(format!("https://khwarizmi.io/auth/{}", params.code));
+mod handler;
 
-    Ok(())
+struct Configuration {
+    wvt: RwLock<String>,
 }
 
 #[tokio::main]
-async fn main() -> Result<(), std::io::Error> {
-    let app = Route::new().at("/auth", get(oauth2_code));
+async fn main() -> Result<()> {
+    let wvt = env::var("WEBHOOK_VERIFICATION_TOKEN")?;
+
+    let config = Arc::new(Configuration {
+        wvt: RwLock::new(wvt),
+    });
+
+    let app = Route::new()
+        .at("/auth/:wvt", get(oauth2_code))
+        .with(AddData::new(config));
 
     Server::new(TcpListener::bind("0.0.0.0:4000"))
         .run(app)
-        .await
+        .await?;
+
+    Ok(())
 }
