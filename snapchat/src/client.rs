@@ -5,6 +5,7 @@ pub struct SnapChat<'a> {
     client_id: &'a str,
     client_secret: &'a str,
     redirect_uri: &'a str,
+    refresh_token: &'a str,
 }
 
 impl<'a> SnapChat<'a> {
@@ -13,21 +14,23 @@ impl<'a> SnapChat<'a> {
         client_id: &'a str,
         client_secret: &'a str,
         redirect_uri: &'a str,
+        refresh_token: &'a str,
     ) -> Self {
         Self {
             token,
             client_id,
             client_secret,
             redirect_uri,
+            refresh_token,
         }
     }
 
     pub async fn auth(&self) -> AuthService {
         AuthService::new(
-            self.token,
             self.client_id,
             self.client_secret,
             self.redirect_uri,
+            self.refresh_token,
         )
         .await
     }

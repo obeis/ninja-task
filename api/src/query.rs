@@ -15,6 +15,7 @@ trait Queries {
         ctx: &Context<'_>,
         token: String,
         ad_account_id: String,
+        refresh_token: String,
     ) -> Result<SegmentsResponse, Error>;
 }
 
@@ -26,6 +27,7 @@ impl Queries for RootQuery {
         ctx: &Context<'_>,
         token: String,
         ad_account_id: String,
+        refresh_token: String,
     ) -> Result<SegmentsResponse, Error> {
         let app = get_app_info(ctx)?;
         let snapchat = SnapChat::new(
@@ -33,6 +35,7 @@ impl Queries for RootQuery {
             &app.client_id,
             &app.client_secret,
             &app.redirect_uri,
+            &refresh_token,
         )
         .await;
         let segment_client = snapchat.segment().await;
