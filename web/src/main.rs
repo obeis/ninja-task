@@ -22,6 +22,20 @@ fn Home() -> Element {
 #[component]
 fn Auth() -> Element {
     rsx! {
-        h1 { "Auth" }
+        div {
+            class: "auth",
+            h1 {
+                class: "auth__title",
+                "Connect your SnapChat"
+            }
+
+            a {
+                href: "https://accounts.snapchat.com/login/oauth2/authorize?client_id=fce56ca5-49a1-4395-bf48-574744af4905&redirect_uri=https://api.khwarizmi.io/v1/auth&response_type=code&scope=snapchat-marketing-api snapchat-offline-conversions-api snapchat-profile-api",
+                button {
+                    class: "auth__button",
+                    "connect"
+                }
+            }
+        }
     }
 }
