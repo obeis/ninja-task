@@ -2,7 +2,7 @@ use async_graphql::Result;
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE};
 use reqwest::{Client, Method, Response, Url};
 
-const BASE_URL_V1: &str = "https://adsapi.snapchat.com/v1";
+pub const BASE_URL_V1: &str = "https://adsapi.snapchat.com/v1";
 
 pub(crate) async fn make_request(
     token: &str,

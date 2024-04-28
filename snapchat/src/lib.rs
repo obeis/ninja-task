@@ -2,6 +2,7 @@
 //!
 //! - ty: this submodule contains API model.
 
+pub mod auth;
 pub mod client;
 pub mod request;
 pub mod segment;

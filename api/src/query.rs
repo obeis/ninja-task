@@ -4,6 +4,8 @@ use async_trait::async_trait;
 use snapchat::client::SnapChat;
 use snapchat::ty::segment::SegmentsResponse;
 
+use super::ty::get_app_info;
+
 pub struct RootQuery;
 
 #[async_trait]
@@ -21,11 +23,18 @@ trait Queries {
 impl Queries for RootQuery {
     async fn get_segments(
         &self,
-        _ctx: &Context<'_>,
+        ctx: &Context<'_>,
         token: String,
         ad_account_id: String,
     ) -> Result<SegmentsResponse, Error> {
-        let snapchat = SnapChat::new(token).await;
+        let app = get_app_info(ctx)?;
+        let snapchat = SnapChat::new(
+            &token,
+            &app.client_id,
+            &app.client_secret,
+            &app.redirect_uri,
+        )
+        .await;
         let segment_client = snapchat.segment().await;
 
         Ok(segment_client.get_all(ad_account_id).await?)

@@ -9,9 +9,11 @@ use tracing::{info, span, Level};
 
 use handler::{graphql, oauth2_code};
 use query::RootQuery;
+use ty::AppInfo;
 
 mod handler;
 mod query;
+mod ty;
 
 struct Configuration {
     wvt: RwLock<String>,
@@ -30,7 +32,15 @@ async fn main() -> Result<()> {
         wvt: RwLock::new(wvt),
     });
 
-    let schema = Schema::build(RootQuery, EmptyMutation, EmptySubscription).finish();
+    let app_info = AppInfo {
+        client_id: env::var("SNAPCHAT_CLIENT_ID")?,
+        client_secret: env::var("SNAPCHAT_CLIENT_SECRET")?,
+        redirect_uri: env::var("SNAPCHAT_REDIRECT_URI")?,
+    };
+
+    let schema = Schema::build(RootQuery, EmptyMutation, EmptySubscription)
+        .data(app_info)
+        .finish();
 
     let app = Route::new()
         .at("/auth/:wvt", get(oauth2_code))
