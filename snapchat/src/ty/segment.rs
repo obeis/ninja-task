@@ -1,3 +1,4 @@
+use async_graphql::{Enum, SimpleObject};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -14,7 +15,7 @@ pub struct SegmentRequest {
     pub ad_account_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Enum, Copy, Clone, Eq, PartialEq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum DataSourceType {
     FirstParty,
@@ -24,20 +25,20 @@ pub enum DataSourceType {
     FootTrafficInsights,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
 pub struct SegmentsResponse {
     pub request_status: String,
     pub request_id: String,
     pub segments: Vec<SegmentResponse>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
 pub struct SegmentResponse {
     pub sub_request_status: String,
     pub segment: Segment,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
 pub struct Segment {
     pub id: String,
     pub name: String,

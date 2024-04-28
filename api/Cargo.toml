@@ -5,7 +5,13 @@ edition = "2021"
 
 [dependencies]
 async-graphql = "7.0.3"
+async-graphql-poem = "7.0.4"
+async-trait = "0.1.80"
 poem = "3.0.0"
 serde = { version = "1.0.199", features = ["derive"] }
 thiserror = "1.0.59"
 tokio = { version = "1.37.0", features = ["full"] }
+tracing = "0.1.40"
+
+snapchat = { path = "../snapchat" }
+tracing-subscriber = "0.3.18"

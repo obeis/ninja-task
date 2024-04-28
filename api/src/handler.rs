@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use async_graphql_poem::{GraphQLRequest, GraphQLResponse};
 use poem::{
     error::ResponseError,
     handler,
@@ -9,6 +11,7 @@ use poem::{
 };
 use serde::Deserialize;
 
+use crate::query::RootQuery;
 use crate::Configuration;
 
 #[derive(Debug, thiserror::Error)]
@@ -42,4 +45,11 @@ pub fn oauth2_code(
     Redirect::moved_permanent(format!("https://khwarizmi.io/auth/{}", params.code));
 
     Ok(())
+}
+
+pub type ApiSchema = Schema<RootQuery, EmptyMutation, EmptySubscription>;
+
+#[handler]
+pub async fn graphql(schema: Data<&ApiSchema>, req: GraphQLRequest) -> GraphQLResponse {
+    schema.execute(req.0).await.into()
 }
