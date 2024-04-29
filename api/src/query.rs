@@ -18,6 +18,12 @@ trait Queries {
     ) -> Result<Token, Error>;
 
     async fn get_segments(&self, ctx: &Context<'_>) -> Result<SegmentsResponse, Error>;
+
+    async fn get_segment(
+        &self,
+        ctx: &Context<'_>,
+        segment_id: String,
+    ) -> Result<SegmentsResponse, Error>;
 }
 
 #[Object]
@@ -46,5 +52,23 @@ impl Queries for RootQuery {
         let segment_client = snapchat.segment().await;
 
         Ok(segment_client.get_all(&app.ad_account_id).await?)
+    }
+
+    async fn get_segment(
+        &self,
+        ctx: &Context<'_>,
+        segment_id: String,
+    ) -> Result<SegmentsResponse, Error> {
+        let app = get_app_info(ctx)?;
+        let snapchat = SnapChat::new(
+            &app.access_token,
+            &app.client_id,
+            &app.client_secret,
+            &app.refresh_token,
+        )
+        .await;
+        let segment_client = snapchat.segment().await;
+
+        Ok(segment_client.get(segment_id).await?)
     }
 }
