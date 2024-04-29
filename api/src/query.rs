@@ -13,6 +13,12 @@ pub struct RootQuery;
 trait Queries {
     async fn generate_token(&self, ctx: &Context<'_>, code: String) -> Result<Token, Error>;
 
+    async fn refresh_token(
+        &self,
+        ctx: &Context<'_>,
+        rerefresh_token: String,
+    ) -> Result<Token, Error>;
+
     async fn get_segments(
         &self,
         ctx: &Context<'_>,
@@ -37,6 +43,24 @@ impl Queries for RootQuery {
         .await;
         let auth_client = snapchat.auth().await;
         Ok(auth_client.generate_token(&code).await?)
+    }
+
+    async fn refresh_token(
+        &self,
+        ctx: &Context<'_>,
+        refresh_token: String,
+    ) -> Result<Token, Error> {
+        let app = get_app_info(ctx)?;
+        let snapchat = SnapChat::new(
+            "",
+            &app.client_id,
+            &app.client_secret,
+            &app.redirect_uri,
+            &refresh_token,
+        )
+        .await;
+        let auth_client = snapchat.auth().await;
+        Ok(auth_client.refresh_token().await?)
     }
 
     async fn get_segments(
