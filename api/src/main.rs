@@ -35,7 +35,9 @@ async fn main() -> Result<()> {
     let app_info = AppInfo {
         client_id: env::var("SNAPCHAT_CLIENT_ID")?,
         client_secret: env::var("SNAPCHAT_CLIENT_SECRET")?,
-        redirect_uri: env::var("SNAPCHAT_REDIRECT_URI")?,
+        access_token: env::var("SNAPCHAT_ACCESS_TOKN")?,
+        refresh_token: env::var("SNAPCHAT_REFRESH_TOKEN")?,
+        ad_account_id: env::var("SNAPCHAT_AD_ACCOUNT_ID")?,
     };
 
     let schema = Schema::build(RootQuery, EmptyMutation, EmptySubscription)

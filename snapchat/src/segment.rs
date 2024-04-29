@@ -32,7 +32,7 @@ impl<'a> SegmentService<'a> {
     }
 
     // Get all segment
-    pub async fn get_all(&self, ad_account_id: String) -> Result<SegmentsResponse> {
+    pub async fn get_all(&self, ad_account_id: &str) -> Result<SegmentsResponse> {
         let path = &format!("/adaccounts/{ad_account_id}/segments");
         let res = make_request(self.token, Method::GET, path, None).await?;
         if !matches!(res.status(), StatusCode::OK) {

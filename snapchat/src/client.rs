@@ -4,7 +4,6 @@ pub struct SnapChat<'a> {
     token: &'a str,
     client_id: &'a str,
     client_secret: &'a str,
-    redirect_uri: &'a str,
     refresh_token: &'a str,
 }
 
@@ -13,26 +12,18 @@ impl<'a> SnapChat<'a> {
         token: &'a str,
         client_id: &'a str,
         client_secret: &'a str,
-        redirect_uri: &'a str,
         refresh_token: &'a str,
     ) -> Self {
         Self {
             token,
             client_id,
             client_secret,
-            redirect_uri,
             refresh_token,
         }
     }
 
     pub async fn auth(&self) -> AuthService {
-        AuthService::new(
-            self.client_id,
-            self.client_secret,
-            self.redirect_uri,
-            self.refresh_token,
-        )
-        .await
+        AuthService::new(self.client_id, self.client_secret, self.refresh_token).await
     }
 
     pub async fn segment(&self) -> SegmentService {
