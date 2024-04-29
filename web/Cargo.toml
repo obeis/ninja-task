@@ -1,5 +1,5 @@
 [package]
-name = "test"
+name = "web_client"
 version = "0.1.0"
 authors = ["Obei Sideg <obei.sideg@gmail.com>"]
 edition = "2021"

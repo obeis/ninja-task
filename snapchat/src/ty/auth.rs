@@ -1,6 +1,7 @@
+use async_graphql::SimpleObject;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
 pub struct Token {
     access_token: String,
     token_type: String,

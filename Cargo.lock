@@ -3396,13 +3396,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "test"
-version = "0.1.0"
-dependencies = [
- "dioxus",
-]
-
-[[package]]
 name = "thiserror"
 version = "1.0.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3879,6 +3872,13 @@ checksum = "77afa9a11836342370f4817622a2f0f418b134426d91a82dfb48f532d2ec13ef"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "web_client"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
 ]
 
 [[package]]
