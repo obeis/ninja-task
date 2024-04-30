@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result};
 
-use async_graphql::{Enum, SimpleObject};
+use async_graphql::{Enum, InputObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
@@ -9,8 +9,9 @@ pub struct SegmentsRequest {
     pub segments: Vec<SegmentRequest>,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject, InputObject)]
 #[graphql(rename_fields = "snake_case")]
+#[graphql(input_name = "segment_input")]
 pub struct SegmentRequest {
     pub name: String,
     pub description: String,
