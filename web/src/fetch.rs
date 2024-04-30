@@ -3,7 +3,9 @@ use async_recursion::async_recursion;
 use reqwest::Response;
 use serde_json::Value;
 
-use snapchat::ty::{auth::Token, segment::SegmentResponse};
+use snapchat::ty::auth::Token;
+use snapchat::ty::segment::SegmentResponse;
+use snapchat::ty::user::UserResponse;
 
 const API_URL: &str = "http://localhost:4000/graphql";
 
@@ -73,6 +75,48 @@ pub async fn get_segment(id: String) -> Result<Vec<SegmentResponse>> {
         .get("data")
         .and_then(|value| value.get("getSegment"))
         .and_then(|value| value.get("segments"));
+    Ok(serde_json::from_str(&payload.unwrap().to_string())?)
+}
+
+const ADD_USERS: &str = r#"{"query":"mutation {\naddUsers(segmentId: \"SEGMENT_ID\", emails: EMAILS) {\nrequest_status\nrequest_id\nusers {\nsub_request_status\nuser {\nnumber_uploaded_users\n}\n}\n}\n}"}"#;
+
+#[async_recursion(?Send)]
+pub async fn add_users(segment_id: String, emails: Vec<String>) -> Result<Vec<UserResponse>> {
+    let res = fetch(ADD_USERS.replace("SEGMENT_ID", &segment_id).replace(
+        "EMAILS",
+        &serde_json::to_string(&emails)?.replace('"', r#"\""#),
+    ))
+    .await?;
+    let text = res.text().await?;
+    let root: Value = serde_json::from_str(&text)?;
+    if is_auth_err(root.clone()).await? {
+        return add_users(segment_id, emails).await;
+    }
+    let payload = root
+        .get("data")
+        .and_then(|value| value.get("addUsers"))
+        .and_then(|value| value.get("users"));
+    Ok(serde_json::from_str(&payload.unwrap().to_string())?)
+}
+
+const DELETE_USERS: &str = r#"{"query":"mutation {\ndeleteUsers(segmentId: \"SEGMENT_ID\", emails: EMAILS) {\nrequest_status\nrequest_id\nusers {\nsub_request_status\nuser {\nnumber_uploaded_users\n}\n}\n}\n}"}"#;
+
+#[async_recursion(?Send)]
+pub async fn delete_users(segment_id: String, emails: Vec<String>) -> Result<Vec<UserResponse>> {
+    let res = fetch(DELETE_USERS.replace("SEGMENT_ID", &segment_id).replace(
+        "EMAILS",
+        &serde_json::to_string(&emails)?.replace('"', r#"\""#),
+    ))
+    .await?;
+    let text = res.text().await?;
+    let root: Value = serde_json::from_str(&text)?;
+    if is_auth_err(root.clone()).await? {
+        return delete_users(segment_id, emails).await;
+    }
+    let payload = root
+        .get("data")
+        .and_then(|value| value.get("deleteUsers"))
+        .and_then(|value| value.get("users"));
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }
 

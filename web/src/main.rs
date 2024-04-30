@@ -105,6 +105,8 @@ fn Segment(id: String) -> Element {
     let segment_id = id.clone();
     let segments = use_resource(move || fetch::get_segment(segment_id.to_string()));
 
+    let mut emails = use_signal(|| String::new());
+
     match &*segments.read_unchecked() {
         Some(Ok(list)) => {
             if let Some(segment) = list.first() {
@@ -272,14 +274,32 @@ fn Segment(id: String) -> Element {
                         div {
                             class: "user",
                             input {
-                                placeholder: "add emails to add/remove. e.g: email1, email2",
+                                placeholder: "add user emails to add/remove for the segment. e.g: email1, email2",
+                                value: "{emails}",
+                                oninput: move |e| emails.set(e.value())
                             }
                             div {
                                 class: "user__btn",
                                 button {
+                                    onclick: {
+                                        let cloned_id = id.clone();
+                                        move |_| {
+                                            let cloned_id = cloned_id.clone();
+                                            let vec: Vec<String> = emails.to_string().replace(' ', "").split(',').map(|s| s.to_string()).collect();
+                                            let _ = use_resource(move || fetch::add_users(cloned_id.to_string(), vec.clone()));
+                                        }
+                                    },
                                     "Add users"
                                 }
                                 button {
+                                    onclick: {
+                                        let cloned_id = id.clone();
+                                        move |_| {
+                                            let cloned_id = cloned_id.clone();
+                                            let vec: Vec<String> = emails.to_string().replace(' ', "").split(',').map(|s| s.to_string()).collect();
+                                            let _ = use_resource(move || fetch::delete_users(cloned_id.to_string(), vec.clone()));
+                                        }
+                                    },
                                     "Remove users"
                                 }
                             }
