@@ -1,5 +1,9 @@
 use dioxus::prelude::*;
 
+use fetch::get_segments;
+
+mod fetch;
+
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
     #[route("/")]
@@ -22,7 +26,58 @@ fn app() -> Element {
 
 #[component]
 fn Segments() -> Element {
-    rsx! {}
+    let segments = use_resource(move || get_segments());
+
+    match &*segments.read_unchecked() {
+        Some(Ok(list)) => {
+            rsx! {
+                div {
+                    class: "segments",
+                    h1 {
+                        class: "segments__title",
+                        "Segments List"
+                    }
+                    table {
+                        class: "segments__table",
+                        thead {
+                            tr {
+                                th {
+                                    "ID"
+                                }
+                                th {
+                                    "Name"
+                                }
+                                th {
+                                    "Description"
+                                }
+                            }
+                        }
+                        tbody {
+                            for segment in list {
+                                tr {
+                                    td {
+                                        "{segment.segment.name}"
+                                    }
+                                    td {
+                                        "name 1"
+                                    }
+                                    td {
+                                        "desc 1"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Some(Err(err)) => {
+            rsx! { "error: {err}" }
+        }
+        _ => {
+            rsx! {"Error loading items"}
+        }
+    }
 }
 
 #[component]

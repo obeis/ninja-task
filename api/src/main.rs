@@ -2,7 +2,7 @@ use std::sync::RwLock;
 use std::{env, sync::Arc};
 
 use async_graphql::{EmptyMutation, EmptySubscription, Result, Schema};
-use poem::middleware::AddData;
+use poem::middleware::{AddData, Cors};
 use poem::post;
 use poem::{get, listener::TcpListener, EndpointExt, Route, Server};
 use tracing::{info, span, Level};
@@ -35,7 +35,7 @@ async fn main() -> Result<()> {
     let app_info = AppInfo {
         client_id: env::var("SNAPCHAT_CLIENT_ID")?,
         client_secret: env::var("SNAPCHAT_CLIENT_SECRET")?,
-        access_token: env::var("SNAPCHAT_ACCESS_TOKN")?,
+        access_token: env::var("SNAPCHAT_ACCESS_TOKEN")?,
         refresh_token: env::var("SNAPCHAT_REFRESH_TOKEN")?,
         ad_account_id: env::var("SNAPCHAT_AD_ACCOUNT_ID")?,
     };
@@ -47,7 +47,8 @@ async fn main() -> Result<()> {
     let app = Route::new()
         .at("/auth/:wvt", get(oauth2_code))
         .at("/graphql", post(graphql).data(schema))
-        .with(AddData::new(config));
+        .with(AddData::new(config))
+        .with(Cors::new());
 
     info!("server is running on :4000");
 

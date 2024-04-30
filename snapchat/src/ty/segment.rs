@@ -33,12 +33,14 @@ pub struct SegmentsResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[serde(rename_all = "camelCase")]
 pub struct SegmentResponse {
     pub sub_request_status: String,
     pub segment: Segment,
 }
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[serde(rename_all = "camelCase")]
 pub struct Segment {
     pub id: String,
     pub name: String,
