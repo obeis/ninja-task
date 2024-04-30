@@ -11,11 +11,7 @@ pub struct RootQuery;
 
 #[async_trait]
 trait Queries {
-    async fn refresh_token(
-        &self,
-        ctx: &Context<'_>,
-        rerefresh_token: String,
-    ) -> Result<Token, Error>;
+    async fn refresh_token(&self, ctx: &Context<'_>) -> Result<Token, Error>;
 
     async fn get_segments(&self, ctx: &Context<'_>) -> Result<SegmentsResponse, Error>;
 
@@ -29,29 +25,34 @@ trait Queries {
 #[Object]
 #[async_trait]
 impl Queries for RootQuery {
-    async fn refresh_token(
-        &self,
-        ctx: &Context<'_>,
-        refresh_token: String,
-    ) -> Result<Token, Error> {
+    async fn refresh_token(&self, ctx: &Context<'_>) -> Result<Token, Error> {
         let app = get_app_info(ctx)?;
-        let snapchat = SnapChat::new("", &app.client_id, &app.client_secret, &refresh_token).await;
+        let client_id = app.client_id.lock().await;
+        let client_secret = app.client_secret.lock().await;
+        let mut refresh_token = app.refresh_token.lock().await;
+        let snapchat = SnapChat::new("", &client_id, &client_secret, &refresh_token).await;
         let auth_client = snapchat.auth().await;
-        Ok(auth_client.refresh_token().await?)
+        let token = auth_client.refresh_token().await?;
+
+        let mut access_token = app.access_token.lock().await;
+        access_token.clone_from(&token.access_token);
+        refresh_token.clone_from(&token.refresh_token);
+
+        Ok(token)
     }
 
     async fn get_segments(&self, ctx: &Context<'_>) -> Result<SegmentsResponse, Error> {
         let app = get_app_info(ctx)?;
-        let snapchat = SnapChat::new(
-            &app.access_token,
-            &app.client_id,
-            &app.client_secret,
-            &app.refresh_token,
-        )
-        .await;
+        let access_token = app.access_token.lock().await;
+        let client_id = app.client_id.lock().await;
+        let client_secret = app.client_secret.lock().await;
+        let refresh_token = app.refresh_token.lock().await;
+        let snapchat =
+            SnapChat::new(&access_token, &client_id, &client_secret, &refresh_token).await;
         let segment_client = snapchat.segment().await;
 
-        Ok(segment_client.get_all(&app.ad_account_id).await?)
+        let ad_account_id = app.ad_account_id.lock().await;
+        Ok(segment_client.get_all(&ad_account_id).await?)
     }
 
     async fn get_segment(
@@ -60,13 +61,12 @@ impl Queries for RootQuery {
         segment_id: String,
     ) -> Result<SegmentsResponse, Error> {
         let app = get_app_info(ctx)?;
-        let snapchat = SnapChat::new(
-            &app.access_token,
-            &app.client_id,
-            &app.client_secret,
-            &app.refresh_token,
-        )
-        .await;
+        let access_token = app.access_token.lock().await;
+        let client_id = app.client_id.lock().await;
+        let client_secret = app.client_secret.lock().await;
+        let refresh_token = app.refresh_token.lock().await;
+        let snapchat =
+            SnapChat::new(&access_token, &client_id, &client_secret, &refresh_token).await;
         let segment_client = snapchat.segment().await;
 
         Ok(segment_client.get(segment_id).await?)

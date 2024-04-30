@@ -5,6 +5,7 @@ use async_graphql::{EmptyMutation, EmptySubscription, Result, Schema};
 use poem::middleware::{AddData, Cors};
 use poem::post;
 use poem::{get, listener::TcpListener, EndpointExt, Route, Server};
+use tokio::sync::Mutex;
 use tracing::{info, span, Level};
 
 use handler::{graphql, oauth2_code};
@@ -33,11 +34,11 @@ async fn main() -> Result<()> {
     });
 
     let app_info = AppInfo {
-        client_id: env::var("SNAPCHAT_CLIENT_ID")?,
-        client_secret: env::var("SNAPCHAT_CLIENT_SECRET")?,
-        access_token: env::var("SNAPCHAT_ACCESS_TOKEN")?,
-        refresh_token: env::var("SNAPCHAT_REFRESH_TOKEN")?,
-        ad_account_id: env::var("SNAPCHAT_AD_ACCOUNT_ID")?,
+        client_id: Arc::new(Mutex::new(env::var("SNAPCHAT_CLIENT_ID")?)),
+        client_secret: Arc::new(Mutex::new(env::var("SNAPCHAT_CLIENT_SECRET")?)),
+        access_token: Arc::new(Mutex::new(env::var("SNAPCHAT_ACCESS_TOKEN")?)),
+        refresh_token: Arc::new(Mutex::new(env::var("SNAPCHAT_REFRESH_TOKEN")?)),
+        ad_account_id: Arc::new(Mutex::new(env::var("SNAPCHAT_AD_ACCOUNT_ID")?)),
     };
 
     let schema = Schema::build(RootQuery, EmptyMutation, EmptySubscription)

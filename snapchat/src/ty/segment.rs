@@ -1,12 +1,14 @@
 use async_graphql::{Enum, SimpleObject};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[graphql(rename_fields = "snake_case")]
 pub struct SegmentsRequest {
     pub segments: Vec<SegmentRequest>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[graphql(rename_fields = "snake_case")]
 pub struct SegmentRequest {
     pub name: String,
     pub description: String,
@@ -26,6 +28,7 @@ pub enum DataSourceType {
 }
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[graphql(rename_fields = "snake_case")]
 pub struct SegmentsResponse {
     pub request_status: String,
     pub request_id: String,
@@ -33,14 +36,14 @@ pub struct SegmentsResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
-#[serde(rename_all = "camelCase")]
+#[graphql(rename_fields = "snake_case")]
 pub struct SegmentResponse {
     pub sub_request_status: String,
     pub segment: Segment,
 }
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
-#[serde(rename_all = "camelCase")]
+#[graphql(rename_fields = "snake_case")]
 pub struct Segment {
     pub id: String,
     pub name: String,
@@ -58,7 +61,8 @@ pub struct Segment {
     pub updated_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[graphql(rename_fields = "snake_case")]
 pub struct UpdateSegmentRequest {
     pub id: String,
     pub name: String,
@@ -67,7 +71,8 @@ pub struct UpdateSegmentRequest {
     pub ad_account_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[graphql(rename_fields = "snake_case")]
 pub struct UpdateSegmentsRequest {
     pub segments: Vec<UpdateSegmentRequest>,
 }

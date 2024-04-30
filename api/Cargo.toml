@@ -15,3 +15,4 @@ tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 
 snapchat = { path = "../snapchat" }
+serde_json = "1.0.116"

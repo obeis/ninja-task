@@ -91,6 +91,7 @@ dependencies = [
  "async-trait",
  "poem",
  "serde",
+ "serde_json",
  "snapchat",
  "thiserror",
  "tokio",
@@ -218,6 +219,17 @@ dependencies = [
  "event-listener 4.0.3",
  "event-listener-strategy 0.4.0",
  "pin-project-lite",
+]
+
+[[package]]
+name = "async-recursion"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b43422f69d8ff38f95f1b2bb76517c91589a924d1559a0e935d7c8ce0274c11"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -3887,6 +3899,7 @@ name = "web_client"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-recursion",
  "dioxus",
  "getrandom",
  "reqwest",

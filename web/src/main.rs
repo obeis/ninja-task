@@ -1,3 +1,5 @@
+#![feature(let_chains)]
+
 use dioxus::prelude::*;
 
 use fetch::get_segments;
@@ -56,13 +58,13 @@ fn Segments() -> Element {
                             for segment in list {
                                 tr {
                                     td {
+                                        "{segment.segment.id}"
+                                    }
+                                    td {
                                         "{segment.segment.name}"
                                     }
                                     td {
-                                        "name 1"
-                                    }
-                                    td {
-                                        "desc 1"
+                                        "{segment.segment.description}"
                                     }
                                 }
                             }
@@ -74,8 +76,8 @@ fn Segments() -> Element {
         Some(Err(err)) => {
             rsx! { "error: {err}" }
         }
-        _ => {
-            rsx! {"Error loading items"}
+        None => {
+            rsx! {"Loading items"}
         }
     }
 }
