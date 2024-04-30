@@ -102,15 +102,198 @@ fn Segments() -> Element {
 
 #[component]
 fn Segment(id: String) -> Element {
-    let segments = use_resource(move || fetch::get_segment(id.to_string()));
+    let segment_id = id.clone();
+    let segments = use_resource(move || fetch::get_segment(segment_id.to_string()));
 
     match &*segments.read_unchecked() {
         Some(Ok(list)) => {
             if let Some(segment) = list.first() {
                 rsx! {
                     div {
+                        class: "segment-container",
                         div {
-                            "{segment.segment.id}"
+                            class: "segment",
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "ID"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.id}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Name"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.name}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Description"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.description}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Status"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.status}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Source Type"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.source_type}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Ad Account ID"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.ad_account_id}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Organization ID"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.organization_id}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Targetable Status"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.targetable_status}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Upload Status"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.upload_status}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Retention In Days"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.retention_in_days}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Approximate Number Of Users"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.approximate_number_users}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Visible To"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    r#"{segment.segment.visible_to.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(", ")}"#
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Created At"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.created_at}"
+                                }
+                            }
+                            div {
+                                class: "segment__info",
+                                div {
+                                    class: "segment__info--label",
+                                    "Updated At"
+                                }
+                                div {
+                                    class: "segment__info--value",
+                                    "{segment.segment.updated_at}"
+                                }
+                            }
+                        }
+
+                        div {
+                            class: "user",
+                            input {
+                                placeholder: "add emails to add/remove. e.g: email1, email2",
+                            }
+                            div {
+                                class: "user__btn",
+                                button {
+                                    "Add users"
+                                }
+                                button {
+                                    "Remove users"
+                                }
+                            }
+                        }
+
+                        button {
+                            onclick: {
+                                let cloned_id = id.clone();
+                                move |_| {
+                                    let cloned_id = cloned_id.clone();
+                                    let _ = use_resource(move || fetch::delete_all_users(cloned_id.to_string()));
+                                }
+                            },
+                            "Delete All users from the segment"
                         }
                     }
                 }

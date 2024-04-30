@@ -1,0 +1,45 @@
+.segment-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__info {
+    display: flex;
+    width: 50rem;
+
+    &--label {
+      margin-right: 0.5rem;
+    }
+
+    &--value {
+      flex: 1;
+    }
+  }
+}
+
+.user {
+  padding-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__btn {
+    margin: 2rem 1rem;
+
+    & button {
+      margin-right: 1rem;
+    }
+  }
+}
+
+input {
+  width: 70rem;
+  height: 5rem;
+  padding: 1rem 2rem;
+}

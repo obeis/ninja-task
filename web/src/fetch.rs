@@ -65,9 +65,6 @@ const GET_SEGMENT_QUERY: &str = r#"{"query":"query {\ngetSegment(segmentId: \"SE
 pub async fn get_segment(id: String) -> Result<Vec<SegmentResponse>> {
     let res = fetch(GET_SEGMENT_QUERY.replace("SEGMENT_ID", &id)).await?;
     let text = res.text().await?;
-    web_sys::console::log_1(
-        &format!("{}\n{}", text, GET_SEGMENT_QUERY.replace("SEGMENT_ID", &id)).into(),
-    );
     let root: Value = serde_json::from_str(&text)?;
     if is_auth_err(root.clone()).await? {
         return get_segment(id).await;
@@ -75,6 +72,23 @@ pub async fn get_segment(id: String) -> Result<Vec<SegmentResponse>> {
     let payload = root
         .get("data")
         .and_then(|value| value.get("getSegment"))
+        .and_then(|value| value.get("segments"));
+    Ok(serde_json::from_str(&payload.unwrap().to_string())?)
+}
+
+const DELETE_ALL_USER_QUERY: &str = r#"{"query":"mutation {\ndeleteAllUsers(segmentId: \"SEGMENT_ID\") {\nsegments {\nsub_request_status\nsegment {\nid\nname\ndescription\nstatus\nsource_type\nad_account_id\norganization_id\ntargetable_status\nupload_status\nretention_in_days\napproximate_number_users\nvisible_to\ncreated_at\nupdated_at\n}\n}\n}\n}"}"#;
+
+#[async_recursion(?Send)]
+pub async fn delete_all_users(id: String) -> Result<Vec<SegmentResponse>> {
+    let res = fetch(DELETE_ALL_USER_QUERY.replace("SEGMENT_ID", &id)).await?;
+    let text = res.text().await?;
+    let root: Value = serde_json::from_str(&text)?;
+    if is_auth_err(root.clone()).await? {
+        return delete_all_users(id).await;
+    }
+    let payload = root
+        .get("data")
+        .and_then(|value| value.get("deleteAllUsers"))
         .and_then(|value| value.get("segments"));
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }
