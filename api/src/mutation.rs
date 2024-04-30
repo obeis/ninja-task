@@ -23,6 +23,12 @@ trait Mutations {
         segment: UpdateSegmentRequest,
     ) -> Result<SegmentsResponse, Error>;
 
+    async fn delete_segment(
+        &self,
+        ctx: &Context<'_>,
+        segment_id: String,
+    ) -> Result<SegmentsResponse, Error>;
+
     async fn add_users(
         &self,
         ctx: &Context<'_>,
@@ -85,6 +91,22 @@ impl Mutations for RootMutation {
         let segment_client = snapchat.segment().await;
         segment.ad_account_id = ad_account_id.to_string();
         Ok(segment_client.update(segment).await?)
+    }
+
+    async fn delete_segment(
+        &self,
+        ctx: &Context<'_>,
+        segment_id: String,
+    ) -> Result<SegmentsResponse, Error> {
+        let app = get_app_info(ctx)?;
+        let access_token = app.access_token.lock().await;
+        let client_id = app.client_id.lock().await;
+        let client_secret = app.client_secret.lock().await;
+        let refresh_token = app.refresh_token.lock().await;
+        let snapchat =
+            SnapChat::new(&access_token, &client_id, &client_secret, &refresh_token).await;
+        let segment_client = snapchat.segment().await;
+        Ok(segment_client.delete(segment_id).await?)
     }
 
     async fn add_users(
