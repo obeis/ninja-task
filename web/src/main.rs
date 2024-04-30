@@ -2,8 +2,6 @@
 
 use dioxus::prelude::*;
 
-use fetch::get_segments;
-
 mod fetch;
 
 #[derive(Clone, Routable, Debug, PartialEq)]
@@ -28,7 +26,9 @@ fn app() -> Element {
 
 #[component]
 fn Segments() -> Element {
-    let segments = use_resource(move || get_segments());
+    let segments = use_resource(move || fetch::get_segments());
+
+    let navigator = use_navigator();
 
     match &*segments.read_unchecked() {
         Some(Ok(list)) => {
@@ -52,11 +52,23 @@ fn Segments() -> Element {
                                 th {
                                     "Description"
                                 }
+                                th {
+                                    "Retention in days"
+                                }
+                                th {
+                                    "Created At"
+                                }
                             }
                         }
                         tbody {
                             for segment in list {
                                 tr {
+                                    onclick: {
+                                        let id = segment.segment.id.clone();
+                                        move |_| {
+                                            navigator.push(Route::Segment { id: id.to_string() });
+                                        }
+                                    },
                                     td {
                                         "{segment.segment.id}"
                                     }
@@ -65,6 +77,12 @@ fn Segments() -> Element {
                                     }
                                     td {
                                         "{segment.segment.description}"
+                                    }
+                                    td {
+                                       "{segment.segment.retention_in_days}"
+                                    }
+                                    td {
+                                        "{segment.segment.created_at}"
                                     }
                                 }
                             }
@@ -84,5 +102,27 @@ fn Segments() -> Element {
 
 #[component]
 fn Segment(id: String) -> Element {
-    rsx! {}
+    let segments = use_resource(move || fetch::get_segment(id.to_string()));
+
+    match &*segments.read_unchecked() {
+        Some(Ok(list)) => {
+            if let Some(segment) = list.first() {
+                rsx! {
+                    div {
+                        div {
+                            "{segment.segment.id}"
+                        }
+                    }
+                }
+            } else {
+                rsx! { "Segment Not Found" }
+            }
+        }
+        Some(Err(err)) => {
+            rsx! {"error: {err}"}
+        }
+        None => {
+            rsx! { "Loading The Segment" }
+        }
+    }
 }
