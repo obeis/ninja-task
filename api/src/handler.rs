@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{EmptySubscription, Schema};
 use async_graphql_poem::{GraphQLRequest, GraphQLResponse};
 use poem::{
     error::ResponseError,
@@ -11,8 +11,8 @@ use poem::{
 };
 use serde::Deserialize;
 
-use crate::query::RootQuery;
 use crate::Configuration;
+use crate::{mutation::RootMutation, query::RootQuery};
 
 #[derive(Debug, thiserror::Error)]
 #[error("invalid webhook verification token")]
@@ -47,7 +47,7 @@ pub fn oauth2_code(
     Ok(())
 }
 
-pub type ApiSchema = Schema<RootQuery, EmptyMutation, EmptySubscription>;
+pub type ApiSchema = Schema<RootQuery, RootMutation, EmptySubscription>;
 
 #[handler]
 pub async fn graphql(schema: Data<&ApiSchema>, req: GraphQLRequest) -> GraphQLResponse {

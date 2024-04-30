@@ -1,7 +1,7 @@
 use std::sync::RwLock;
 use std::{env, sync::Arc};
 
-use async_graphql::{EmptyMutation, EmptySubscription, Result, Schema};
+use async_graphql::{EmptySubscription, Result, Schema};
 use poem::middleware::{AddData, Cors};
 use poem::post;
 use poem::{get, listener::TcpListener, EndpointExt, Route, Server};
@@ -9,10 +9,12 @@ use tokio::sync::Mutex;
 use tracing::{info, span, Level};
 
 use handler::{graphql, oauth2_code};
+use mutation::RootMutation;
 use query::RootQuery;
 use ty::AppInfo;
 
 mod handler;
+mod mutation;
 mod query;
 mod ty;
 
@@ -41,7 +43,7 @@ async fn main() -> Result<()> {
         ad_account_id: Arc::new(Mutex::new(env::var("SNAPCHAT_AD_ACCOUNT_ID")?)),
     };
 
-    let schema = Schema::build(RootQuery, EmptyMutation, EmptySubscription)
+    let schema = Schema::build(RootQuery, RootMutation, EmptySubscription)
         .data(app_info)
         .finish();
 
