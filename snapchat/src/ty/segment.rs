@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter, Result};
+
 use async_graphql::{Enum, SimpleObject};
 use serde::{Deserialize, Serialize};
 
@@ -25,6 +27,18 @@ pub enum DataSourceType {
     Pixel,
     Mobile,
     FootTrafficInsights,
+}
+
+impl Display for DataSourceType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            DataSourceType::FirstParty => write!(f, "First Party"),
+            DataSourceType::Engagement => write!(f, "Engagement"),
+            DataSourceType::Pixel => write!(f, "Pixel"),
+            DataSourceType::Mobile => write!(f, "Mobile"),
+            DataSourceType::FootTrafficInsights => write!(f, "Foot Traffic Insights"),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, SimpleObject)]
