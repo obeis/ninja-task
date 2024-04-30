@@ -76,7 +76,7 @@ pub struct Segment {
     pub updated_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[derive(Debug, Serialize, Deserialize, SimpleObject, InputObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UpdateSegmentRequest {
     pub id: String,
