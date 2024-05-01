@@ -11,7 +11,7 @@ pub struct RootMutation;
 
 #[async_trait]
 trait Mutations {
-    async fn create_segment(
+    async fn create_segments(
         &self,
         ctx: &Context<'_>,
         segements: Vec<SegmentRequest>,
@@ -53,7 +53,7 @@ trait Mutations {
 #[Object]
 #[async_trait]
 impl Mutations for RootMutation {
-    async fn create_segment(
+    async fn create_segments(
         &self,
         ctx: &Context<'_>,
         mut segments: Vec<SegmentRequest>,
