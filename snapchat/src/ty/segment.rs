@@ -1,17 +1,38 @@
 use std::fmt::{Display, Formatter, Result};
+use std::result::Result as FromStrResult;
+use std::str::FromStr;
 
+use anyhow::bail;
 use async_graphql::{Enum, InputObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct SegmentsRequest {
     pub segments: Vec<SegmentRequest>,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject, InputObject)]
+impl Display for SegmentsRequest {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "[")?;
+        for (i, s) in self.segments.iter().enumerate() {
+            if i > 0 {
+                write!(f, " , ")?;
+            }
+            write!(f, "{{")?;
+            write!(f, " name: \\\"{}\\\",", s.name)?;
+            write!(f, " description: \\\"{}\\\",", s.description)?;
+            write!(f, " source_type: \\\"{}\\\",", s.source_type)?;
+            write!(f, " retention_in_days: {},", s.retention_in_days)?;
+            write!(f, " ad_account_id: \\\"{}\\\"", s.ad_account_id)?;
+            write!(f, "}}")?;
+        }
+        write!(f, "]")
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject, InputObject)]
 #[graphql(rename_fields = "snake_case")]
-#[graphql(input_name = "segment_input")]
 pub struct SegmentRequest {
     pub name: String,
     pub description: String,
@@ -33,11 +54,26 @@ pub enum DataSourceType {
 impl Display for DataSourceType {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
-            DataSourceType::FirstParty => write!(f, "First Party"),
-            DataSourceType::Engagement => write!(f, "Engagement"),
-            DataSourceType::Pixel => write!(f, "Pixel"),
-            DataSourceType::Mobile => write!(f, "Mobile"),
-            DataSourceType::FootTrafficInsights => write!(f, "Foot Traffic Insights"),
+            DataSourceType::FirstParty => write!(f, "FIRST_PARTY"),
+            DataSourceType::Engagement => write!(f, "ENGAGEMENT"),
+            DataSourceType::Pixel => write!(f, "PIXEL"),
+            DataSourceType::Mobile => write!(f, "MOBILE"),
+            DataSourceType::FootTrafficInsights => write!(f, "FOOT_TRAFFIC_INSIGHTS"),
+        }
+    }
+}
+
+impl FromStr for DataSourceType {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> FromStrResult<Self, Self::Err> {
+        match s {
+            "FIRST_PARTY" => Ok(DataSourceType::FirstParty),
+            "ENGAGEMENT" => Ok(DataSourceType::Engagement),
+            "PIXEL" => Ok(DataSourceType::Pixel),
+            "MOBILE" => Ok(DataSourceType::Mobile),
+            "FOOT_TRAFFIC_INSIGHTS" => Ok(DataSourceType::FootTrafficInsights),
+            _ => bail!("unknown `DataSourceType`: {}", s),
         }
     }
 }

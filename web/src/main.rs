@@ -2,9 +2,11 @@
 
 use dioxus::prelude::*;
 
+use crate::create_segment::CreateSegments;
 use crate::segment::Segment;
 use crate::segments::Segments;
 
+mod create_segment;
 mod fetch;
 mod segment;
 mod segments;
@@ -15,6 +17,8 @@ enum Route {
     Segments {},
     #[route("/segment/:id")]
     Segment { id: String },
+    #[route("/create")]
+    CreateSegments,
 }
 
 fn main() {

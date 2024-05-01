@@ -18,6 +18,16 @@ pub fn Segments() -> Element {
                         class: "segments__title",
                         "Segments List"
                     }
+                    div {
+                        class: "segments__control",
+                        div {
+                            class: "segments__control--add",
+                            onclick: move |_| {
+                                navigator.push(Route::CreateSegments {});
+                            },
+                            "+"
+                        }
+                    }
                     table {
                         class: "segments__table",
                         thead {

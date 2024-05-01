@@ -1,0 +1,16 @@
+.creates {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__control {
+    display: flex;
+    align-items: center;
+
+    &--add {
+      font-size: 4rem;
+    }
+  }
+}
+
+.create {}

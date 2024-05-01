@@ -78,23 +78,22 @@ pub async fn get_segment(id: String) -> Result<Vec<SegmentResponse>> {
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }
 
-const CREATE_SEGMENTS_QUERY: &str = r#"{"query":"mutation {\ncreateSegments(segments: VAR_SEGMENTS) {\nsegments {\nsub_request_status\nsegment {\nid\nname\ndescription\nstatus\nsource_type\nad_account_id\norganization_id\ntargetable_status\nupload_status\nretention_in_days\napproximate_number_users\nvisible_to\ncreated_at\nupdated_at\n}\n}\n}\n}"}"#;
+const CREATE_SEGMENTS_QUERY: &str = r#"{"query":"mutation { createSegments(segments: VAR_SEGMENT) { request_status request_id segments { sub_request_status segment { id name description status source_type ad_account_id organization_id targetable_status upload_status retention_in_days approximate_number_users visible_to created_at updated_at }}}}"}"#;
 
 #[async_recursion(?Send)]
 pub async fn create_segments(segments: SegmentsRequest) -> Result<Vec<SegmentResponse>> {
-    let res = fetch(CREATE_SEGMENTS_QUERY.replace(
-        "VAR_SEGMENTS",
-        &serde_json::to_string(&segments)?.replace('"', r#"\""#),
-    ))
-    .await?;
+    let query = CREATE_SEGMENTS_QUERY.replace("VAR_SEGMENT", &segments.to_string());
+    web_sys::console::log_1(&format!("{:?}", query).into());
+    let res = fetch(query).await?;
     let text = res.text().await?;
+    web_sys::console::log_1(&format!("{:?}", text).into());
     let root: Value = serde_json::from_str(&text)?;
     if is_auth_err(root.clone()).await? {
         return create_segments(segments).await;
     }
     let payload = root
         .get("data")
-        .and_then(|value| value.get("createSegment"))
+        .and_then(|value| value.get("createSegments"))
         .and_then(|value| value.get("segments"));
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }
