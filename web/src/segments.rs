@@ -32,7 +32,9 @@ pub fn Segments() -> Element {
                             onclick: move |_| {
                                 navigator.push(Route::CreateSegments {});
                             },
-                            "+"
+                            button {
+                                "+ Add Segment"
+                            }
                         }
                     }
                     table {

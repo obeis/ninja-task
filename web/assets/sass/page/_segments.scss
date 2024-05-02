@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 5rem;
 
   &__title {
     margin-top: 5rem;
@@ -9,8 +10,18 @@
   }
 
   &__control {
+    display: flex;
+    width: 100%;
+    justify-content: end;
+    margin-right: 10rem;
+
     &--add {
       font-size: 4rem;
+
+      & button {
+        border: none;
+        padding: 1rem;
+      }
     }
   }
 
@@ -24,6 +35,10 @@
 
     & td {
       border-bottom: 1px solid rgba(gray, 0.4);
+    }
+
+    & img {
+      width: 3.5rem;
     }
   }
 }

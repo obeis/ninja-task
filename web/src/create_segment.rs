@@ -20,6 +20,9 @@ pub fn CreateSegments() -> Element {
     rsx! {
         div {
             class: "creates",
+            h1 {
+                "Create Segments"
+            }
             div {
                 class: "creates__list",
                 for (index, segment) in list.read().iter().enumerate() {
@@ -119,18 +122,13 @@ pub fn CreateSegments() -> Element {
                                 }
                             }
                         }
-                        div {
-                            class: "create__control",
-                            button {
-                                "Remove"
-                            }
-                        }
                     }
                 }
             }
             div {
                 class: "creates__control",
                 div {
+                    class: "creates__control-btn",
                     div {
                         class: "creates__control--add",
                         onclick: move |_| {
