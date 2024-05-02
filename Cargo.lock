@@ -2031,6 +2031,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
+name = "mime_guess"
+version = "2.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4192263c238a5f0d0c6bfd21f336a313a4ce1c450542449ca191bb657b4642ef"
+dependencies = [
+ "mime",
+ "unicase",
+]
+
+[[package]]
 name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2442,9 +2452,11 @@ dependencies = [
  "headers",
  "http 1.1.0",
  "http-body-util",
+ "httpdate",
  "hyper",
  "hyper-util",
  "mime",
+ "mime_guess",
  "nix",
  "parking_lot",
  "percent-encoding",
@@ -3707,6 +3719,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "unicase"
+version = "2.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7d2d4dafb69621809a81864c9c1b864479e1235c0dd4e199924b9742439ed89"
+dependencies = [
+ "version_check",
+]
+
+[[package]]
 name = "unicode-bidi"
 version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3908,6 +3929,17 @@ dependencies = [
  "serde_json",
  "snapchat",
  "web-sys",
+]
+
+[[package]]
+name = "web_server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "poem",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

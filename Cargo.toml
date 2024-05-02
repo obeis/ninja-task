@@ -3,6 +3,7 @@ members = [
   "api",
   "snapchat",
   "web",
+  "web_server",
 ]
 
 resolver = "2"

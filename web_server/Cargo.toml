@@ -1,0 +1,11 @@
+[package]
+name = "web_server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.82"
+poem = { version = "3.0.0", features = ["static-files"] }
+tokio = { version = "1.37.0", features = ["full", "macros", "rt-multi-thread"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
