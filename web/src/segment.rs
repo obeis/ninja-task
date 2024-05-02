@@ -15,6 +15,9 @@ pub fn Segment(id: String) -> Element {
                 rsx! {
                     div {
                         class: "segment-container",
+                        h1 {
+                            "Segment"
+                        }
                         div {
                             class: "segment",
                             div {
