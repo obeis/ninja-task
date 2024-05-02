@@ -158,7 +158,6 @@ pub fn CreateSegments() -> Element {
                         onclick: move |_| {
                             let list: Vec<SegmentRequest> = list.read().clone();
                             let req = SegmentsRequest { segments: list };
-                            web_sys::console::log_1(&format!("{:#?}", req).into());
                             let _ = use_resource(move || fetch::create_segments(req.clone()));
                         },
                         "Push to SnapChat"

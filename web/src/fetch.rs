@@ -4,7 +4,7 @@ use reqwest::Response;
 use serde_json::Value;
 
 use snapchat::ty::auth::Token;
-use snapchat::ty::segment::{SegmentResponse, SegmentsRequest};
+use snapchat::ty::segment::{SegmentResponse, SegmentsRequest, UpdateSegmentRequest};
 use snapchat::ty::user::UserResponse;
 
 const API_URL: &str = "http://localhost:4000/graphql";
@@ -83,10 +83,8 @@ const CREATE_SEGMENTS_QUERY: &str = r#"{"query":"mutation { createSegments(segme
 #[async_recursion(?Send)]
 pub async fn create_segments(segments: SegmentsRequest) -> Result<Vec<SegmentResponse>> {
     let query = CREATE_SEGMENTS_QUERY.replace("VAR_SEGMENT", &segments.to_string());
-    web_sys::console::log_1(&format!("{:?}", query).into());
     let res = fetch(query).await?;
     let text = res.text().await?;
-    web_sys::console::log_1(&format!("{:?}", text).into());
     let root: Value = serde_json::from_str(&text)?;
     if is_auth_err(root.clone()).await? {
         return create_segments(segments).await;
@@ -94,6 +92,42 @@ pub async fn create_segments(segments: SegmentsRequest) -> Result<Vec<SegmentRes
     let payload = root
         .get("data")
         .and_then(|value| value.get("createSegments"))
+        .and_then(|value| value.get("segments"));
+    Ok(serde_json::from_str(&payload.unwrap().to_string())?)
+}
+
+const UPDATE_SEGMENT_QUERY: &str = r#"{"query":"mutation { updateSegment(segment: VAR_SEGMENT) { request_status request_id segments { sub_request_status segment { id name description status source_type ad_account_id organization_id targetable_status upload_status retention_in_days approximate_number_users visible_to created_at updated_at }}}}"}"#;
+
+#[async_recursion(?Send)]
+pub async fn update_segment(segment: UpdateSegmentRequest) -> Result<Vec<SegmentResponse>> {
+    let query = UPDATE_SEGMENT_QUERY.replace("VAR_SEGMENT", &segment.to_string());
+    let res = fetch(query).await?;
+    let text = res.text().await?;
+    let root: Value = serde_json::from_str(&text)?;
+    if is_auth_err(root.clone()).await? {
+        return update_segment(segment).await;
+    }
+    let payload = root
+        .get("data")
+        .and_then(|value| value.get("updateSegment"))
+        .and_then(|value| value.get("segments"));
+    Ok(serde_json::from_str(&payload.unwrap().to_string())?)
+}
+
+const DELETE_SEGMENT_QUERY: &str = r#"{"query":"mutation { deleteSegment(segmentId: \"VAR_SEGMENT_ID\") { request_status request_id segments { sub_request_status segment { id name description status source_type ad_account_id organization_id targetable_status upload_status retention_in_days approximate_number_users visible_to created_at updated_at }}}}"}"#;
+
+#[async_recursion(?Send)]
+pub async fn delete_segment(segment_id: String) -> Result<Vec<SegmentResponse>> {
+    let query = DELETE_SEGMENT_QUERY.replace("VAR_SEGMENT_ID", &segment_id);
+    let res = fetch(query).await?;
+    let text = res.text().await?;
+    let root: Value = serde_json::from_str(&text)?;
+    if is_auth_err(root.clone()).await? {
+        return delete_segment(segment_id).await;
+    }
+    let payload = root
+        .get("data")
+        .and_then(|value| value.get("deleteSegment"))
         .and_then(|value| value.get("segments"));
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }

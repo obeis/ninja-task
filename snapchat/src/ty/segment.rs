@@ -78,7 +78,7 @@ impl FromStr for DataSourceType {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct SegmentsResponse {
     pub request_status: String,
@@ -86,14 +86,14 @@ pub struct SegmentsResponse {
     pub segments: Vec<SegmentResponse>,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct SegmentResponse {
     pub sub_request_status: String,
     pub segment: Segment,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct Segment {
     pub id: String,
@@ -112,7 +112,7 @@ pub struct Segment {
     pub updated_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject, InputObject)]
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject, InputObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UpdateSegmentRequest {
     pub id: String,
@@ -122,7 +122,19 @@ pub struct UpdateSegmentRequest {
     pub ad_account_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, SimpleObject)]
+impl Display for UpdateSegmentRequest {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "{{")?;
+        write!(f, " id: \\\"{}\\\",", self.id)?;
+        write!(f, " name: \\\"{}\\\",", self.name)?;
+        write!(f, " description: \\\"{}\\\",", self.description)?;
+        write!(f, " retention_in_days: {},", self.retention_in_days)?;
+        write!(f, " ad_account_id: \\\"{}\\\"", self.ad_account_id)?;
+        write!(f, "}}")
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, SimpleObject)]
 #[graphql(rename_fields = "snake_case")]
 pub struct UpdateSegmentsRequest {
     pub segments: Vec<UpdateSegmentRequest>,
