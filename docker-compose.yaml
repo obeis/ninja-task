@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - 4000:4000
+    env_file:
+    - path: ./.env
+      required: true
+    environment:
+      - SNAPCHAT_CLIENT_ID=${SNAPCHAT_CLIENT_ID}
+      - SNAPCHAT_CLIENT_SECRET=${SNAPCHAT_CLIENT_SECRET}
+      - SNAPCHAT_ACCESS_TOKEN=${SNAPCHAT_ACCESS_TOKEN}
+      - SNAPCHAT_REFRESH_TOKEN=${SNAPCHAT_REFRESH_TOKEN}
+      - SNAPCHAT_AD_ACCOUNT_ID=${SNAPCHAT_AD_ACCOUNT_ID}
+      - WEBHOOK_VERIFICATION_TOKEN=${WEBHOOK_VERIFICATION_TOKEN}
+
+  web:
+    build:
+      context: .
+      dockerfile: web_server/Dockerfile
+    ports:
+      - 8080:8080
+    env_file:
+    - path: ./.env
+      required: true
+    environment:
+      - WEB_FILES_PATH=${WEB_FILES_PATH}
