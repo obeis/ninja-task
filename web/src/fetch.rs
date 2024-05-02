@@ -83,8 +83,10 @@ const CREATE_SEGMENTS_QUERY: &str = r#"{"query":"mutation { createSegments(segme
 #[async_recursion(?Send)]
 pub async fn create_segments(segments: SegmentsRequest) -> Result<Vec<SegmentResponse>> {
     let query = CREATE_SEGMENTS_QUERY.replace("VAR_SEGMENT", &segments.to_string());
+    web_sys::console::log_1(&query.to_string().into());
     let res = fetch(query).await?;
     let text = res.text().await?;
+    web_sys::console::log_1(&text.to_string().into());
     let root: Value = serde_json::from_str(&text)?;
     if is_auth_err(root.clone()).await? {
         return create_segments(segments).await;

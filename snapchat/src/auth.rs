@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use async_graphql::Result;
 use reqwest::{Method, StatusCode};
+use tracing::{event, Level};
 
 use crate::request::make_form_request;
 
@@ -32,6 +33,7 @@ impl<'a> AuthService<'a> {
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
+        event!(Level::INFO, "refersh token");
         Ok(res.json().await?)
     }
 }

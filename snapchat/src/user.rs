@@ -1,6 +1,7 @@
 use async_graphql::Result;
 use reqwest::{Method, StatusCode};
 use sha2::{Digest, Sha256};
+use tracing::{info, span, Level};
 
 use super::request::make_request;
 use super::ty::segment::SegmentsResponse;
@@ -21,6 +22,9 @@ impl<'a> UserService<'a> {
         segment_id: String,
         emails: Vec<String>,
     ) -> Result<UsersResponse> {
+        let span = span!(Level::INFO, "add_users");
+        let _guard = span.enter();
+
         let path = &format!("/segments/{segment_id}/users");
         let data = hash_emails(emails);
         let body = serde_json::to_string(&UsersRequest {
@@ -29,11 +33,14 @@ impl<'a> UserService<'a> {
                 data,
             }],
         })?;
+        info!("reqeust body: `{}`", body);
         let res = make_request(self.token, Method::POST, path, Some(body)).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
-        Ok(res.json().await?)
+        let text = res.text().await?;
+        info!("text response: `{}`", text);
+        Ok(serde_json::from_str(&text)?)
     }
 
     /// Delete users by emails
@@ -42,6 +49,9 @@ impl<'a> UserService<'a> {
         segment_id: String,
         emails: Vec<String>,
     ) -> Result<UsersResponse> {
+        let span = span!(Level::INFO, "delete_users");
+        let _guard = span.enter();
+
         let path = &format!("/segments/{segment_id}/users");
         let data = hash_emails(emails);
         let body = serde_json::to_string(&UsersRequest {
@@ -50,21 +60,29 @@ impl<'a> UserService<'a> {
                 data,
             }],
         })?;
+        info!("reqeust body: `{}`", body);
         let res = make_request(self.token, Method::DELETE, path, Some(body)).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
-        Ok(res.json().await?)
+        let text = res.text().await?;
+        info!("text response: `{}`", text);
+        Ok(serde_json::from_str(&text)?)
     }
 
     /// Delete all users from segment
     pub async fn delete_all_users(&self, segment_id: String) -> Result<SegmentsResponse> {
+        let span = span!(Level::INFO, "delete_all_users");
+        let _guard = span.enter();
+
         let path = &format!("/segments/{segment_id}/all_users");
         let res = make_request(self.token, Method::DELETE, path, None).await?;
         if !matches!(res.status(), StatusCode::OK) {
             return Err(async_graphql::Error::new(res.text().await?));
         }
-        Ok(res.json().await?)
+        let text = res.text().await?;
+        info!("text response: `{}`", text);
+        Ok(serde_json::from_str(&text)?)
     }
 }
 

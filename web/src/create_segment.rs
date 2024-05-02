@@ -72,8 +72,10 @@ pub fn CreateSegments() -> Element {
                                 oninput: move |e| {
                                     if let Some(new_seg) = list.write().get_mut(index) {
                                         let r = DataSourceType::from_str(&e.value());
-                                        new_seg.source_type = if let Ok(ty) = r {
-                                            ty
+                                        new_seg.source_type = if let Ok(_ty) = r {
+                                            // FIXME(obei): Return `ty`.
+                                            // Currently support `FirstParty` only
+                                            DataSourceType::FirstParty
                                         } else {
                                             DataSourceType::FirstParty
                                         }
