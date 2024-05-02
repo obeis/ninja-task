@@ -33,11 +33,16 @@ pub fn UpdateSegment(id: String) -> Element {
                     .clone_from(&segment.segment.retention_in_days);
                 rsx! {
                     div {
+                        class: "update",
+                        h1 { "Update Segment" }
                         div {
+                            class: "update__row",
                             div {
+                                class: "update__row--label",
                                 "Name"
                             }
                             input {
+                                class: "update__row--input",
                                 value: "{segment.segment.name}",
                                 oninput: move |e| {
                                     segment_signal.write().name = e.value();
@@ -45,10 +50,13 @@ pub fn UpdateSegment(id: String) -> Element {
                             }
                         }
                         div {
+                            class: "update__row",
                             div {
+                                class: "update__row--label",
                                 "Description"
                             }
                             input {
+                                class: "update__row--input",
                                 value: "{segment.segment.description}",
                                 oninput: move |e| {
                                     segment_signal.write().description = e.value();
@@ -56,10 +64,13 @@ pub fn UpdateSegment(id: String) -> Element {
                             }
                         }
                         div {
+                            class: "update__row",
                             div {
+                                class: "update__row--label",
                                 "Retention in days"
                             }
                             input {
+                                class: "update__row--input",
                                 value: "{segment.segment.retention_in_days}",
                                 oninput: move |e| {
                                     let r = e.value().parse();
@@ -72,6 +83,7 @@ pub fn UpdateSegment(id: String) -> Element {
                             }
                         }
                         div {
+                            class: "update__btn",
                             button {
                                 onclick: {
                                     move |_| {
