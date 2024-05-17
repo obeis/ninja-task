@@ -11,22 +11,50 @@ pub struct UserService<'a> {
     token: &'a str,
 }
 
+pub enum UserIdentifier {
+    Unknown,
+    Email,
+    MobileAdId,
+    PhoneNumber,
+}
+
+impl UserIdentifier {
+    pub fn to_schema(&self) -> String {
+        match self {
+            UserIdentifier::Email => "EMAIL_SHA256".to_string(),
+            UserIdentifier::MobileAdId => "MOBILE_AD_ID_SHA256".to_string(),
+            UserIdentifier::PhoneNumber => "PHONE_SHA256".to_string(),
+            UserIdentifier::Unknown => "".to_string(),
+        }
+    }
+
+    pub fn from_string(s: String) -> Self {
+        match s.as_str() {
+            "email" => UserIdentifier::Email,
+            "mobile" => UserIdentifier::MobileAdId,
+            "phone" => UserIdentifier::PhoneNumber,
+            _ => UserIdentifier::Unknown,
+        }
+    }
+}
+
 impl<'a> UserService<'a> {
     pub async fn new(token: &'a str) -> Self {
         Self { token }
     }
 
-    /// Add users by emails
+    /// Add users by identifier (email/mobile ad id/phone number)
     pub async fn add_users(
         &self,
         segment_id: String,
-        emails: Vec<String>,
+        identifiers: Vec<String>,
+        schema_ty: UserIdentifier,
     ) -> Result<UsersResponse> {
         let path = &format!("/segments/{segment_id}/users");
-        let data = hash_emails(emails);
+        let data = hash_identifiers(identifiers);
         let body = serde_json::to_string(&UsersRequest {
             users: vec![UserRequest {
-                schema: vec!["EMAIL_SHA256".to_string()],
+                schema: vec![schema_ty.to_schema()],
                 data,
             }],
         })?;
@@ -40,17 +68,18 @@ impl<'a> UserService<'a> {
         Ok(serde_json::from_str(&text)?)
     }
 
-    /// Delete users by emails
+    /// Delete users by identifier (email/mobile ad id/phone number)
     pub async fn delete_users(
         &self,
         segment_id: String,
-        emails: Vec<String>,
+        identifiers: Vec<String>,
+        schema_ty: UserIdentifier,
     ) -> Result<UsersResponse> {
         let path = &format!("/segments/{segment_id}/users");
-        let data = hash_emails(emails);
+        let data = hash_identifiers(identifiers);
         let body = serde_json::to_string(&UsersRequest {
             users: vec![UserRequest {
-                schema: vec!["EMAIL_SHA256".to_string()],
+                schema: vec![schema_ty.to_schema()],
                 data,
             }],
         })?;
@@ -77,13 +106,13 @@ impl<'a> UserService<'a> {
     }
 }
 
-fn hash_emails(emails: Vec<String>) -> Vec<Vec<String>> {
+fn hash_identifiers(identifiers: Vec<String>) -> Vec<Vec<String>> {
     let mut data: Vec<Vec<String>> = Vec::new();
-    for email in emails.iter() {
+    for ident in identifiers.iter() {
         let mut hasher = Sha256::new();
-        hasher.update(email);
-        let hashed_email = hasher.finalize();
-        let hex_data = hex::encode(hashed_email);
+        hasher.update(ident);
+        let hashed_idents = hasher.finalize();
+        let hex_data = hex::encode(hashed_idents);
         data.push(vec![hex_data]);
     }
     data

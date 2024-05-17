@@ -3,6 +3,7 @@
 Run the following command in the root of the project to start the Dioxus dev server:
 
 ```bash
+cargo install dioxus-cli@0.5.0
 cargo install grass
 grass assets/sass/main.scss assets/main.css
 dx serve --hot-reload

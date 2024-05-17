@@ -7,7 +7,8 @@ pub fn Segment(id: String) -> Element {
     let segment_id = id.clone();
     let segments = use_resource(move || fetch::get_segment(segment_id.to_string()));
 
-    let mut emails = use_signal(|| String::new());
+    let mut identifiers = use_signal(|| String::new());
+    let mut schema_ty = use_signal(|| String::from("email"));
 
     match &*segments.read_unchecked() {
         Some(Ok(list)) => {
@@ -178,10 +179,29 @@ pub fn Segment(id: String) -> Element {
 
                         div {
                             class: "user",
+                            div {
+                                select {
+                                    class: "user__select",
+                                    value: "{schema_ty}",
+                                    oninput: move |e| schema_ty.set(e.value()),
+                                    option {
+                                        value: "email",
+                                        "Email"
+                                    }
+                                    option {
+                                        value: "mobile",
+                                        "Mobile AD ID"
+                                    }
+                                    option {
+                                        value: "phone",
+                                        "Phone Number"
+                                    }
+                                }
+                            }
                             input {
-                                placeholder: "add user emails to add/remove for the segment. e.g: email1, email2",
-                                value: "{emails}",
-                                oninput: move |e| emails.set(e.value())
+                                placeholder: "Add user identifiers for adding/removing from the segment. Separate them with commas",
+                                value: "{identifiers}",
+                                oninput: move |e| identifiers.set(e.value())
                             }
                             div {
                                 class: "user__btn",
@@ -190,8 +210,8 @@ pub fn Segment(id: String) -> Element {
                                         let cloned_id = id.clone();
                                         move |_| {
                                             let cloned_id = cloned_id.clone();
-                                            let vec: Vec<String> = emails.to_string().replace(' ', "").split(',').map(|s| s.to_string()).collect();
-                                            let _ = use_resource(move || fetch::add_users(cloned_id.to_string(), vec.clone()));
+                                            let vec: Vec<String> = identifiers.to_string().replace(' ', "").split(',').map(|s| s.to_string()).collect();
+                                            let _ = use_resource(move || fetch::add_users(cloned_id.to_string(), vec.clone(), schema_ty.to_string()));
                                         }
                                     },
                                     "Add users"
@@ -201,8 +221,8 @@ pub fn Segment(id: String) -> Element {
                                         let cloned_id = id.clone();
                                         move |_| {
                                             let cloned_id = cloned_id.clone();
-                                            let vec: Vec<String> = emails.to_string().replace(' ', "").split(',').map(|s| s.to_string()).collect();
-                                            let _ = use_resource(move || fetch::delete_users(cloned_id.to_string(), vec.clone()));
+                                            let vec: Vec<String> = identifiers.to_string().replace(' ', "").split(',').map(|s| s.to_string()).collect();
+                                            let _ = use_resource(move || fetch::delete_users(cloned_id.to_string(), vec.clone(), schema_ty.to_string()));
                                         }
                                     },
                                     "Remove users"

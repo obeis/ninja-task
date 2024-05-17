@@ -134,19 +134,26 @@ pub async fn delete_segment(segment_id: String) -> Result<Vec<SegmentResponse>> 
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }
 
-const ADD_USERS: &str = r#"{"query":"mutation {\naddUsers(segmentId: \"SEGMENT_ID\", emails: EMAILS) {\nrequest_status\nrequest_id\nusers {\nsub_request_status\nuser {\nnumber_uploaded_users\n}\n}\n}\n}"}"#;
+const ADD_USERS: &str = r#"{"query":"mutation {\naddUsers(segmentId: \"SEGMENT_ID\", identifiers: IDENTS, schemaTy: \"SCHEMA_TY\") {\nrequest_status\nrequest_id\nusers {\nsub_request_status\nuser {\nnumber_uploaded_users\n}\n}\n}\n}"}"#;
 
 #[async_recursion(?Send)]
-pub async fn add_users(segment_id: String, emails: Vec<String>) -> Result<Vec<UserResponse>> {
-    let res = fetch(ADD_USERS.replace("SEGMENT_ID", &segment_id).replace(
-        "EMAILS",
-        &serde_json::to_string(&emails)?.replace('"', r#"\""#),
-    ))
-    .await?;
+pub async fn add_users(
+    segment_id: String,
+    identifiers: Vec<String>,
+    schema_ty: String,
+) -> Result<Vec<UserResponse>> {
+    let query = ADD_USERS
+        .replace("SEGMENT_ID", &segment_id)
+        .replace(
+            "IDENTS",
+            &serde_json::to_string(&identifiers)?.replace('"', r#"\""#),
+        )
+        .replace("SCHEMA_TY", &schema_ty);
+    let res = fetch(query).await?;
     let text = res.text().await?;
     let root: Value = serde_json::from_str(&text)?;
     if is_auth_err(root.clone()).await? {
-        return add_users(segment_id, emails).await;
+        return add_users(segment_id, identifiers, schema_ty).await;
     }
     let payload = root
         .get("data")
@@ -155,19 +162,28 @@ pub async fn add_users(segment_id: String, emails: Vec<String>) -> Result<Vec<Us
     Ok(serde_json::from_str(&payload.unwrap().to_string())?)
 }
 
-const DELETE_USERS: &str = r#"{"query":"mutation {\ndeleteUsers(segmentId: \"SEGMENT_ID\", emails: EMAILS) {\nrequest_status\nrequest_id\nusers {\nsub_request_status\nuser {\nnumber_uploaded_users\n}\n}\n}\n}"}"#;
+const DELETE_USERS: &str = r#"{"query":"mutation {\ndeleteUsers(segmentId: \"SEGMENT_ID\", identifiers: IDENTS, schemaTy: \"SCHEMA_TY\") {\nrequest_status\nrequest_id\nusers {\nsub_request_status\nuser {\nnumber_uploaded_users\n}\n}\n}\n}"}"#;
 
 #[async_recursion(?Send)]
-pub async fn delete_users(segment_id: String, emails: Vec<String>) -> Result<Vec<UserResponse>> {
-    let res = fetch(DELETE_USERS.replace("SEGMENT_ID", &segment_id).replace(
-        "EMAILS",
-        &serde_json::to_string(&emails)?.replace('"', r#"\""#),
-    ))
+pub async fn delete_users(
+    segment_id: String,
+    identifiers: Vec<String>,
+    schema_ty: String,
+) -> Result<Vec<UserResponse>> {
+    let res = fetch(
+        DELETE_USERS
+            .replace("SEGMENT_ID", &segment_id)
+            .replace(
+                "IDENTS",
+                &serde_json::to_string(&identifiers)?.replace('"', r#"\""#),
+            )
+            .replace("SCHEMA_TY", &schema_ty),
+    )
     .await?;
     let text = res.text().await?;
     let root: Value = serde_json::from_str(&text)?;
     if is_auth_err(root.clone()).await? {
-        return delete_users(segment_id, emails).await;
+        return delete_users(segment_id, identifiers, schema_ty).await;
     }
     let payload = root
         .get("data")

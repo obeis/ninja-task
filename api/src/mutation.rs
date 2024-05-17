@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use snapchat::client::SnapChat;
 use snapchat::ty::segment::{SegmentRequest, SegmentsResponse, UpdateSegmentRequest};
 use snapchat::ty::user::UsersResponse;
+use snapchat::user::UserIdentifier;
 
 use super::ty::get_app_info;
 
@@ -33,14 +34,16 @@ trait Mutations {
         &self,
         ctx: &Context<'_>,
         segment_id: String,
-        emails: Vec<String>,
+        identifiers: Vec<String>,
+        schema_ty: String,
     ) -> Result<UsersResponse, Error>;
 
     async fn delete_users(
         &self,
         ctx: &Context<'_>,
         segment_id: String,
-        emails: Vec<String>,
+        identifiers: Vec<String>,
+        schema_ty: String,
     ) -> Result<UsersResponse, Error>;
 
     async fn delete_all_users(
@@ -113,7 +116,8 @@ impl Mutations for RootMutation {
         &self,
         ctx: &Context<'_>,
         segment_id: String,
-        emails: Vec<String>,
+        identifiers: Vec<String>,
+        schema_ty: String,
     ) -> Result<UsersResponse, Error> {
         let app = get_app_info(ctx)?;
         let access_token = app.access_token.lock().await;
@@ -124,14 +128,21 @@ impl Mutations for RootMutation {
             SnapChat::new(&access_token, &client_id, &client_secret, &refresh_token).await;
         let user_client = snapchat.user().await;
 
-        Ok(user_client.add_users(segment_id, emails).await?)
+        Ok(user_client
+            .add_users(
+                segment_id,
+                identifiers,
+                UserIdentifier::from_string(schema_ty),
+            )
+            .await?)
     }
 
     async fn delete_users(
         &self,
         ctx: &Context<'_>,
         segment_id: String,
-        emails: Vec<String>,
+        identifiers: Vec<String>,
+        schema_ty: String,
     ) -> Result<UsersResponse, Error> {
         let app = get_app_info(ctx)?;
         let access_token = app.access_token.lock().await;
@@ -142,7 +153,13 @@ impl Mutations for RootMutation {
             SnapChat::new(&access_token, &client_id, &client_secret, &refresh_token).await;
         let user_client = snapchat.user().await;
 
-        Ok(user_client.delete_users(segment_id, emails).await?)
+        Ok(user_client
+            .delete_users(
+                segment_id,
+                identifiers,
+                UserIdentifier::from_string(schema_ty),
+            )
+            .await?)
     }
 
     async fn delete_all_users(
